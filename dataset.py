@@ -88,7 +88,7 @@ def readScannetppInfo(rootdir):
             T=T,
             FovY=FovY,
             FovX=FovX,
-            image=image,
+            # auskommentiert: image=image,
             image_path=image_path,
             image_name=image_name,
             width=image.size[0],
