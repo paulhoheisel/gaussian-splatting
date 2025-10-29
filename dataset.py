@@ -17,13 +17,19 @@ from PIL import Image
 MAX_NUM_IMAGES_PER_SCENE = 2048
 
 
+
+# Checke, ob die Pfade unten so stimmen!!
+
+
+
+
 def readScannetppInfo(rootdir):
     train_cam_infos = []
     test_cam_infos = []
     transforms_path = os.path.join(rootdir, "nerfstudio/transforms_undistorted.json")
-    images_dir = os.path.join(rootdir, "resized_images_undistorted")
-    points_txt_path = os.path.join(rootdir, "colmap/model_transformed_scaled/points3D.txt")
-    camera_extrinsic_path = os.path.join(rootdir, "colmap/model_transformed_scaled/images.txt")
+    images_dir = os.path.join(rootdir, "resized_images") # davor: resized_images_undistorted
+    points_txt_path = os.path.join(rootdir, "colmap/points3D.txt") # davor: colmap/model_transformed_scaled/points3D.txt
+    camera_extrinsic_path = os.path.join(rootdir, "colmap/images.txt") # davor: colmap/model_transformed_scaled/images.txt
     camera_extrinsic = read_extrinsics_text(camera_extrinsic_path)
 
     extrinsic_dict = {}
@@ -33,7 +39,7 @@ def readScannetppInfo(rootdir):
         T = np.array(image.tvec)
         extrinsic_dict[filename] = (R, T)
 
-    ply_path = os.path.join(rootdir, "colmap/points3D.ply")
+    ply_path = os.path.join(rootdir, "colmap/points3D.ply") #existiert nur als txt
 
     # Read points3D.txt
     xyz, rgb, _ = read_points3D_text(points_txt_path)
