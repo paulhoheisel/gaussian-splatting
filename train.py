@@ -143,7 +143,28 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
 
         iter_end.record()
 
+        # was passiert hier?
+        
         with torch.no_grad():
+
+
+            # New: zero gradients for masked SH coefficients
+            if hasattr(gaussians, "sh_degree_per_point") and gaussians.get_features is not None:
+                P = gaussians.get_features.shape[0]
+                num_coeffs = (gaussians.max_sh_degree + 1) ** 2
+                device = gaussians.get_features.device
+                keep_counts = ((gaussians.sh_degree_per_point + 1) ** 2).view(P, 1).to(device)
+                idxs = torch.arange(num_coeffs, device=device).view(1, num_coeffs)
+                mask = (idxs < keep_counts).float()
+
+                mask_dc = mask[:, 0:1]
+                mask_rest = mask[:, 1:]
+
+                if gaussians._features_dc.grad is not None:
+                    gaussians._features_dc.grad *= mask_dc.unsqueeze(-1)
+                if gaussians._features_rest.grad is not None:
+                    gaussians._features_rest.grad *= mask_rest.unsqueeze(-1)
+
             # Progress bar
             ema_loss_for_log = 0.4 * loss.item() + 0.6 * ema_loss_for_log
             ema_Ll1depth_for_log = 0.4 * Ll1depth + 0.6 * ema_Ll1depth_for_log
